@@ -1,0 +1,18 @@
+# Directories
+node_modules/
+dist/
+coverage/
+.env
+
+# Files
+*.log
+*.pid
+*.swp
+.DS_Store
+
+# TypeScript
+*.tsbuildinfo
+
+# Editor
+.vscode/
+.idea/
