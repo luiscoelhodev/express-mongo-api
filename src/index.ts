@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import mongoose from 'mongoose';
+import { route } from './routes';
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -20,9 +21,7 @@ mongoose
     console.log('Database connection error.', error);
   });
 
-app.get('/', (_req, res) => {
-  return res.json({ hello: 'world' });
-});
+app.use('/', route);
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}.`);
