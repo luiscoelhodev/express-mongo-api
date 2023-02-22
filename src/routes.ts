@@ -8,11 +8,9 @@ route.get('/', (_req, res) => {
 });
 
 route.get('/users', usersController.getUsers);
-
 route.post('/user', usersController.createUser);
-
 route.get('/users/:userId', usersController.getUserById);
-
 route.put('/users/:userId', usersController.updateUser);
+route.delete('/users/:userId', usersController.deleteUser);
 
 export { route };

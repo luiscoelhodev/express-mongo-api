@@ -115,4 +115,35 @@ export class UsersController {
       });
     }
   }
+
+  public async deleteUser(request: Request, response: Response) {
+    const { userId } = request.params;
+
+    if (!userId || !/^[a-zA-Z0-9]+$/.test(userId)) {
+      return response
+        .status(400)
+        .json({ error: 'Please provide a valid userId.' });
+    }
+
+    try {
+      const userToBeDeleted = await User.findByIdAndDelete(userId);
+      if (userToBeDeleted === null) {
+        return response.status(404).json({ error: 'User not found.' });
+      }
+      return response
+        .status(200)
+        .json({ message: 'User deleted successfully.' });
+    } catch (error) {
+      console.log(error);
+      if (!isValidObjectId(userId)) {
+        return response.status(400).json({
+          error:
+            'Please provide a valid ObjectId. A Valid ObjectId must have 24 hexadecimal characters, representing the 12 bytes of the ObjectId in order.',
+        });
+      }
+      return response
+        .status(500)
+        .json({ message: 'Error while deleting user.' });
+    }
+  }
 }
