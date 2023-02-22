@@ -13,4 +13,6 @@ route.post('/user', usersController.createUser);
 
 route.get('/users/:userId', usersController.getUserById);
 
+route.put('/users/:userId', usersController.updateUser);
+
 export { route };

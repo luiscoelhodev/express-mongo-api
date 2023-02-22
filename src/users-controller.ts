@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { User } from './database';
-import { userZodSchema } from './usersValidator';
+import { userUpdateZodSchema, userZodSchema } from './usersValidator';
 import { isValidObjectId } from 'mongoose';
 
 export class UsersController {
@@ -74,6 +74,45 @@ export class UsersController {
       return response
         .status(500)
         .json({ message: 'Error in retrieving user', error });
+    }
+  }
+
+  public async updateUser(request: Request, response: Response) {
+    const { userId } = request.params;
+
+    if (!userId || !/^[a-zA-Z0-9]+$/.test(userId)) {
+      return response
+        .status(400)
+        .json({ error: 'Please provide a valid userId.' });
+    }
+
+    const validation = userUpdateZodSchema.safeParse(request.body);
+
+    if (validation.success) {
+      try {
+        const userToBeUpdated = await User.findByIdAndUpdate(
+          userId,
+          validation.data,
+          { new: true }
+        );
+        return response
+          .status(200)
+          .json({ message: 'User updated successfully.', userToBeUpdated });
+      } catch (error) {
+        console.log(error);
+        if (!isValidObjectId(userId)) {
+          return response.status(400).json({
+            error:
+              'Please provide a valid ObjectId. A Valid ObjectId must have 24 hexadecimal characters, representing the 12 bytes of the ObjectId in order.',
+          });
+        }
+        return response.status(500).json({ message: 'Error updating user' });
+      }
+    } else {
+      return response.status(422).json({
+        message: 'Invalid parameters.',
+        error: validation.error.errors,
+      });
     }
   }
 }
