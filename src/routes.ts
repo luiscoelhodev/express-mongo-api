@@ -11,4 +11,6 @@ route.get('/users', usersController.getUsers);
 
 route.post('/user', usersController.createUser);
 
+route.get('/users/:userId', usersController.getUserById);
+
 export { route };

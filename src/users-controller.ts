@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { User } from './database';
 import { userZodSchema } from './usersValidator';
+import { isValidObjectId } from 'mongoose';
 
 export class UsersController {
   public async getUsers(_request: Request, response: Response) {
@@ -44,6 +45,35 @@ export class UsersController {
         message: 'Invalid user information. ',
         error: isBodyValid.error.errors,
       });
+    }
+  }
+
+  public async getUserById(request: Request, response: Response) {
+    const { userId } = request.params;
+
+    if (!userId || !/^[a-zA-Z0-9]+$/.test(userId)) {
+      return response
+        .status(400)
+        .json({ error: 'Please provide a valid userId.' });
+    }
+
+    try {
+      const userFound = await User.findById(userId);
+      console.log(userFound);
+      if (userFound === null) {
+        return response.status(404).json({ error: 'User not found.' });
+      }
+      return response.status(200).json({ userFound });
+    } catch (error) {
+      if (!isValidObjectId(userId)) {
+        return response.status(400).json({
+          error:
+            'Please provide a valid ObjectId. A Valid ObjectId must have 24 hexadecimal characters, representing the 12 bytes of the ObjectId in order.',
+        });
+      }
+      return response
+        .status(500)
+        .json({ message: 'Error in retrieving user', error });
     }
   }
 }
